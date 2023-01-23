@@ -5,10 +5,10 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(psl
-  VERSION 0.21.1.0 # when changing this, must set LIBPSL_VERSION_NUMBER too
+  VERSION 0.21.2.0 # when changing this, must set LIBPSL_VERSION_NUMBER too
   LANGUAGES C
 )
-set(LIBPSL_VERSION_NUMBER 0x001501)
+set(LIBPSL_VERSION_NUMBER 0x001502)
 set(LIBPSL_VERSION_MAJOR ${psl_VERSION_MAJOR})
 set(LIBPSL_VERSION_MINOR ${psl_VERSION_MINOR})
 set(LIBPSL_VERSION_PATCH ${psl_VERSION_PATCH})
@@ -19,10 +19,8 @@ add_definitions(
   -DBUILDING_PSL=1
   -DPSL_STATIC=1
 
-  # ensure that builtin list is enabled even though the client code
-  # is going to ensure utf8 + lowercase instead of bundling more
-  # dependencies here (e.g. libidn2, libunistring)
-  -DFORCE_BUILTIN_LIST=1
+  # ensure that builtin list is enabled
+  -DENABLE_BUILTIN=1
 )
 
 set(PSL_FILE "${CMAKE_SOURCE_DIR}/list/public_suffix_list.dat")

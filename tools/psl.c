@@ -1,5 +1,5 @@
 /*
- * Copyright(c) 2014-2018 Tim Ruehsen
+ * Copyright(c) 2014-2022 Tim Ruehsen
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -38,6 +38,10 @@
 
 #ifdef _WIN32
 # include <winsock2.h> // WSAStartup, WSACleanup
+
+// Windows does not have localtime_r but has localtime_s, which is more or less
+// the same except that the arguments are reversed
+# define localtime_r(t_sec,t_now) localtime_s(t_now,t_sec)
 #endif
 
 #include <stdlib.h>
@@ -88,9 +92,12 @@ static void init_windows(void) {
 static const char *time2str(time_t t)
 {
 	static char buf[64];
-	struct tm *tp = localtime(&t);
+	struct tm tm;
 
-	strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", tp);
+	if (localtime_r(&t, &tm) != NULL)
+		strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+	else
+		strcpy(buf, "--notime--");
 	return buf;
 }
 
@@ -160,7 +167,7 @@ int main(int argc, const char *const *argv)
 				printf("psl %s (0x%06x)\n", PACKAGE_VERSION, psl_check_version_number(0));
 				printf("libpsl %s\n", psl_get_version());
 				printf("\n");
-				printf("Copyright (C) 2014-2018 Tim Ruehsen\n");
+				printf("Copyright (C) 2014-2022 Tim Ruehsen\n");
 				printf("License: MIT\n");
 				exit(0);
 			}
